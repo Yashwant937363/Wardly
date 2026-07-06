@@ -1,0 +1,22 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "cloudinary>=1.45.0",
+    "fashion-clip>=0.2.2",
+    "fastapi>=0.139.0",
+    "google-genai>=2.10.0",
+    "numba>=0.60.0",
+    "open-clip-torch>=3.3.0",
+    "pillow>=12.3.0",
+    "pymongo>=4.17.0",
+    "python-multipart>=0.0.32",
+    "rembg[cpu]>=2.0.76",
+    "torch>=2.12.1",
+    "transformers>=5.12.1",
+    "ultralytics>=8.4.84",
+    "uvicorn[standard]>=0.49.0",
+]

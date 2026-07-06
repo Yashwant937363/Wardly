@@ -1,0 +1,126 @@
+{
+  "item_id": "shirt_001",
+  "owner_id": "user_123",
+
+  "vision_metadata": {
+    "image": {
+      "original_url": "",
+      "thumbnail_url": "",
+      "segmented_url": ""
+    },
+
+    "segmentation": {
+      "mask_url": "",
+      "bounding_box": [0, 0, 512, 512]
+    },
+
+    "colors": {
+      "dominant": [
+        {
+          "name": "Navy Blue",
+          "rgb": [28, 45, 92],
+          "hsv": [223, 70, 36],
+          "hex": "#1C2D5C",
+          "percentage": 82
+        },
+        {
+          "name": "White",
+          "rgb": [245, 245, 245],
+          "percentage": 18
+        }
+      ],
+
+      "primary_color_family": "Blue",
+      "secondary_color_family": "Neutral"
+    },
+
+    "detected_attributes": {
+      "category": "Shirt",
+      "subcategory": "Oxford Shirt",
+      "fit": "Slim Fit",
+      "sleeve_length": "Full Sleeve",
+      "collar": "Button Down",
+      "pattern": "Solid",
+      "fabric": "Cotton",
+      "texture": "Smooth",
+      "closure": "Buttons",
+      "neckline": null,
+      "logo_present": false,
+      "graphic_present": false,
+      "hood": false,
+      "pockets": 1
+    },
+
+    "embedding": [-0.24, 0.51],
+
+    "confidence": {
+      "category": 0.99,
+      "color": 0.98,
+      "fabric": 0.83,
+      "pattern": 0.96,
+      "fit": 0.91
+    }
+  },
+
+  "fashion_metadata": {
+    "style": ["Smart Casual", "Business Casual"],
+
+    "formality": 7,
+
+    "occasions": ["Office", "Dinner", "Meeting"],
+
+    "seasons": ["Spring", "Summer"],
+
+    "weather": {
+      "min_temperature": 18,
+      "max_temperature": 32,
+      "rain_friendly": false
+    },
+
+    "layering": {
+      "layer": "Base",
+      "can_be_layered": true
+    },
+
+    "compatible_color_families": ["White", "Grey", "Black", "Beige", "Brown"],
+
+    "compatible_styles": ["Business Casual", "Minimalist", "Classic"],
+
+    "dress_code": ["Office", "Casual Friday", "Semi Formal"],
+
+    "fashion_tags": ["Minimal", "Classic", "Versatile"]
+  },
+
+  "user_metadata": {
+    "favorite": true,
+
+    "rating": 5,
+
+    "comfort_rating": 4.8,
+
+    "purchase": {
+      "brand": "Uniqlo",
+      "price": 1999,
+      "currency": "INR",
+      "purchase_date": "2026-03-10"
+    },
+
+    "usage": {
+      "times_worn": 17,
+      "last_worn": "2026-06-24",
+      "cost_per_wear": 117.6
+    },
+
+    "laundry": {
+      "status": "Clean",
+      "last_washed": "2026-06-25"
+    },
+
+    "availability": {
+      "in_closet": true,
+      "currently_wearing": false
+    },
+
+    "notes": "Perfect for office meetings."
+  }
+}

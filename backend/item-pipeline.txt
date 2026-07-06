@@ -1,0 +1,33 @@
+Upload Image
+      │
+      ▼
+Cloudinary
+
+      │
+      ▼
+Gemini
+      │
+      └── Transparent PNG
+
+      │
+      ▼
+Gemini
+      │
+      ├── Fabric
+      ├── Pattern
+      ├── Style
+      ├── Fit
+      ├── Colors
+      └── Fashion Metadata
+
+      │
+      ▼
+OpenCV
+      │
+      ├── HSV
+      ├── RGB
+      └── Dominant Colors
+
+      │
+      ▼
+MongoDB

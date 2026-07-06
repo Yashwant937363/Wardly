@@ -1,0 +1,49 @@
+{
+  "vision_metadata": {
+    "colors": {
+      "dominant": [
+        {
+          "name": "Rust Brown",
+          "rgb": [166, 88, 30],
+          "hsv": [26, 82, 65],
+          "hex": "#A6581E",
+          "percentage": 82
+        },
+        {
+          "name": "White",
+          "rgb": [255, 255, 255],
+          "hsv": [0, 0, 100],
+          "hex": "#FFFFFF",
+          "percentage": 18
+        }
+      ],
+      "primary_color_family": "Brown",
+      "secondary_color_family": "White"
+    },
+
+    "detected_attributes": {
+      "category": "Shirt",
+      "subcategory": "Button-down",
+      "fit": "Regular Fit",
+      "sleeve_length": "Full Sleeve",
+      "collar": "Pointed Collar",
+      "pattern": "Solid",
+      "fabric": "Cotton",
+      "texture": "Smooth",
+      "closure": "Button",
+      "neckline": null,
+      "logo_present": false,
+      "graphic_present": false,
+      "hood": false,
+      "pockets": 2
+    },
+
+    "confidence": {
+      "category": 0.98,
+      "color": 0.95,
+      "fabric": 0.8,
+      "pattern": 0.99,
+      "fit": 0.9
+    }
+  }
+}

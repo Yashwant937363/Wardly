@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wardly — Ask your closet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --paper: #f1ece1;
+        --paper-raised: #faf7f0;
+        --ink: #2b2420;
+        --ink-soft: #6b6055;
+        --wine: #7a2e3a;
+        --wine-deep: #591f28;
+        --sage: #8a9b7e;
+        --kraft: #c9a875;
+        --hairline: rgba(43, 36, 32, 0.14);
+        --shadow:
+          0 1px 2px rgba(43, 36, 32, 0.06), 0 8px 24px rgba(43, 36, 32, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        background-image: radial-gradient(
+          circle at 1px 1px,
+          rgba(43, 36, 32, 0.05) 1px,
+          transparent 1px
+        );
+        background-size: 22px 22px;
+        color: var(--ink);
+        font-family: "Work Sans", sans-serif;
+        min-height: 100vh;
+      }
+
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 56px 24px 96px;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 44px;
+      }
+
+      .mark {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        margin-bottom: 14px;
+      }
+
+      .mark::before,
+      .mark::after {
+        content: "";
+        width: 28px;
+        height: 1px;
+        background: var(--hairline);
+      }
+
+      h1 {
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: clamp(2.4rem, 5vw, 3.4rem);
+        line-height: 1.05;
+        margin: 0 0 12px;
+      }
+
+      h1 em {
+        font-style: italic;
+        font-weight: 500;
+        color: var(--wine);
+      }
+
+      header p {
+        color: var(--ink-soft);
+        font-size: 1.02rem;
+        max-width: 46ch;
+        margin: 0 auto;
+      }
+
+      /* ---- query card ---- */
+      .query-card {
+        background: var(--paper-raised);
+        border: 1px solid var(--hairline);
+        border-radius: 4px;
+        box-shadow: var(--shadow);
+        padding: 28px;
+        position: relative;
+      }
+
+      .query-card::before {
+        content: "occasion";
+        position: absolute;
+        top: -11px;
+        left: 24px;
+        background: var(--wine);
+        color: var(--paper-raised);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 2px;
+      }
+
+      form {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      #query {
+        flex: 1 1 320px;
+        font-family: "Fraunces", serif;
+        font-size: 1.15rem;
+        font-style: italic;
+        background: transparent;
+        border: none;
+        border-bottom: 1.5px solid var(--hairline);
+        padding: 10px 4px;
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      #query::placeholder {
+        color: #a89e91;
+        opacity: 1;
+      }
+
+      #query:focus {
+        border-bottom-color: var(--wine);
+      }
+
+      .owner-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12px;
+        color: var(--ink-soft);
+        flex: 0 0 auto;
+      }
+
+      #owner_id {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12px;
+        background: var(--paper);
+        border: 1px solid var(--hairline);
+        border-radius: 3px;
+        padding: 8px 10px;
+        color: var(--ink);
+        width: 120px;
+      }
+
+      button[type="submit"] {
+        font-family: "Work Sans", sans-serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        background: var(--wine);
+        color: var(--paper-raised);
+        border: none;
+        border-radius: 3px;
+        padding: 12px 22px;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          transform 0.1s ease;
+      }
+
+      button[type="submit"]:hover {
+        background: var(--wine-deep);
+      }
+      button[type="submit"]:active {
+        transform: translateY(1px);
+      }
+      button[type="submit"]:disabled {
+        background: #b9ada0;
+        cursor: not-allowed;
+      }
+
+      .examples {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .example-chip {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11.5px;
+        color: var(--ink-soft);
+        background: var(--paper);
+        border: 1px solid var(--hairline);
+        border-radius: 20px;
+        padding: 6px 12px;
+        cursor: pointer;
+        transition:
+          border-color 0.15s ease,
+          color 0.15s ease;
+      }
+
+      .example-chip:hover {
+        border-color: var(--wine);
+        color: var(--wine);
+      }
+
+      /* ---- status / empty / error states ---- */
+      .status {
+        margin-top: 40px;
+        text-align: center;
+        color: var(--ink-soft);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        display: none;
+      }
+
+      .status.visible {
+        display: block;
+      }
+
+      .status.error {
+        color: var(--wine);
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--wine);
+        margin-right: 8px;
+        animation: pulse 1s ease-in-out infinite;
+        vertical-align: middle;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.25;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* ---- results ---- */
+      #results {
+        margin-top: 48px;
+        display: grid;
+        gap: 28px;
+      }
+
+      .look {
+        position: relative;
+        background: var(--paper-raised);
+        border: 1px solid var(--hairline);
+        border-radius: 4px;
+        box-shadow: var(--shadow);
+        padding: 32px 28px 26px;
+        opacity: 0;
+        transform: translateY(10px);
+        animation: rise 0.45s ease forwards;
+      }
+
+      @keyframes rise {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .tag {
+        position: absolute;
+        top: -16px;
+        left: 28px;
+        background: var(--kraft);
+        color: #3a2f1e;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 5px 12px 5px 10px;
+        border-radius: 2px;
+        box-shadow: 0 2px 4px rgba(43, 36, 32, 0.15);
+        transform: rotate(-3deg);
+      }
+
+      .tag::before {
+        content: "";
+        position: absolute;
+        left: -6px;
+        top: 50%;
+        width: 6px;
+        height: 6px;
+        background: var(--paper);
+        border: 1px solid rgba(43, 36, 32, 0.3);
+        border-radius: 50%;
+        transform: translateY(-50%);
+      }
+
+      .look h2 {
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-style: italic;
+        font-size: 1.5rem;
+        margin: 6px 0 20px;
+        color: var(--wine-deep);
+      }
+
+      .item-list {
+        list-style: none;
+        margin: 0 0 20px;
+        padding: 0;
+        border-top: 1px dashed var(--hairline);
+      }
+
+      .item-list li {
+        padding: 13px 0;
+        border-bottom: 1px dashed var(--hairline);
+        display: grid;
+        grid-template-columns: 96px 1fr;
+        gap: 14px;
+      }
+
+      .item-cat {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--sage);
+        padding-top: 2px;
+      }
+
+      .item-reason {
+        font-size: 0.94rem;
+        line-height: 1.5;
+        color: var(--ink);
+      }
+      .item-list li {
+        padding: 13px 0;
+        border-bottom: 1px dashed var(--hairline);
+        display: grid;
+        grid-template-columns: 56px 96px 1fr;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .item-thumb {
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+        border-radius: 3px;
+        border: 1px solid var(--hairline);
+        background: var(--paper);
+      }
+
+      .item-thumb.placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 9px;
+        color: var(--ink-soft);
+        text-align: center;
+      }
+
+      .styling-notes {
+        background: var(--paper);
+        border-left: 2px solid var(--kraft);
+        padding: 14px 16px;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        color: var(--ink-soft);
+        font-style: italic;
+      }
+
+      .styling-notes::before {
+        content: "Styling note — ";
+        font-style: normal;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      @media (max-width: 520px) {
+        .item-list li {
+          grid-template-columns: 56px 1fr;
+          grid-template-areas:
+            "thumb cat"
+            "thumb reason";
+        }
+        .item-thumb {
+          grid-area: thumb;
+        }
+        .item-cat {
+          grid-area: cat;
+        }
+        .item-reason {
+          grid-area: reason;
+        }
+        .owner-row {
+          width: 100%;
+        }
+        #owner_id {
+          flex: 1;
+          width: auto;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .look {
+          animation: none;
+          opacity: 1;
+          transform: none;
+        }
+        .spinner {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="mark">Wardly</div>
+        <h1>What are you <em>getting into</em> today?</h1>
+        <p>
+          Describe the occasion. We'll put together looks using only what's
+          already in your closet.
+        </p>
+      </header>
+
+      <div class="query-card">
+        <form id="query-form">
+          <input
+            type="text"
+            id="query"
+            name="query"
+            placeholder="a rooftop party, a first date, Sunday brunch…"
+            autocomplete="off"
+            required
+          />
+          <div class="owner-row">
+            <label for="owner_id">closet</label>
+            <input type="text" id="owner_id" name="owner_id" value="user_123" />
+          </div>
+          <button type="submit" id="submit-btn">Style me</button>
+        </form>
+        <div class="examples">
+          <span class="example-chip" data-q="I want to go to a party"
+            >a party</span
+          >
+          <span class="example-chip" data-q="Casual weekend brunch with friends"
+            >weekend brunch</span
+          >
+          <span class="example-chip" data-q="A smart-casual first date"
+            >first date</span
+          >
+          <span class="example-chip" data-q="Formal work presentation"
+            >work presentation</span
+          >
+        </div>
+      </div>
+
+      <div class="status" id="status"></div>
+      <div id="results"></div>
+    </div>
+
+    <script>
+      const form = document.getElementById("query-form");
+      const queryInput = document.getElementById("query");
+      const ownerInput = document.getElementById("owner_id");
+      const submitBtn = document.getElementById("submit-btn");
+      const statusEl = document.getElementById("status");
+      const resultsEl = document.getElementById("results");
+
+      document.querySelectorAll(".example-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          queryInput.value = chip.dataset.q;
+          queryInput.focus();
+        });
+      });
+
+      function setStatus(text, kind) {
+        statusEl.textContent = text || "";
+        statusEl.className =
+          "status" +
+          (text ? " visible" : "") +
+          (kind === "error" ? " error" : "");
+      }
+
+      function renderResults(data) {
+        resultsEl.innerHTML = "";
+        if (!data.combinations || data.combinations.length === 0) {
+          setStatus(
+            "No outfit combinations came back — try describing the occasion differently.",
+            "error",
+          );
+          return;
+        }
+
+        data.combinations.forEach((combo, i) => {
+          const look = document.createElement("article");
+          look.className = "look";
+          look.style.animationDelay = i * 0.08 + "s";
+
+          const tag = document.createElement("div");
+          tag.className = "tag";
+          tag.textContent = "Look " + String(i + 1).padStart(2, "0");
+          look.appendChild(tag);
+
+          const title = document.createElement("h2");
+          title.textContent = combo.title;
+          look.appendChild(title);
+
+          const list = document.createElement("ul");
+          list.className = "item-list";
+          (combo.items || []).forEach((item) => {
+            const li = document.createElement("li");
+
+            const thumb = document.createElement(
+              item.image_url ? "img" : "div",
+            );
+            thumb.className =
+              "item-thumb" + (item.image_url ? "" : " placeholder");
+            if (item.image_url) {
+              thumb.src = item.image_url;
+              thumb.alt = item.category;
+              thumb.loading = "lazy";
+            } else {
+              thumb.textContent = item.category;
+            }
+
+            const cat = document.createElement("div");
+            cat.className = "item-cat";
+            cat.textContent = item.category;
+
+            const reason = document.createElement("div");
+            reason.className = "item-reason";
+            reason.textContent = item.reason;
+
+            li.appendChild(thumb);
+            li.appendChild(cat);
+            li.appendChild(reason);
+            list.appendChild(li);
+          });
+          look.appendChild(list);
+
+          if (combo.styling_notes) {
+            const notes = document.createElement("div");
+            notes.className = "styling-notes";
+            notes.textContent = combo.styling_notes;
+            look.appendChild(notes);
+          }
+
+          resultsEl.appendChild(look);
+        });
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const query = queryInput.value.trim();
+        const ownerId = ownerInput.value.trim() || "user_123";
+        if (!query) return;
+
+        resultsEl.innerHTML = "";
+        submitBtn.disabled = true;
+        setStatus("Reading your closet, thinking it over…");
+        statusEl.innerHTML =
+          '<span class="spinner"></span>Reading your closet, thinking it over…';
+        statusEl.className = "status visible";
+
+        try {
+          const res = await fetch("/api/outfit-suggestions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query, owner_id: ownerId }),
+          });
+
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            const detail = body.detail || "Request failed (" + res.status + ")";
+            setStatus(detail, "error");
+            return;
+          }
+
+          const data = await res.json();
+          setStatus("");
+          renderResults(data);
+        } catch (err) {
+          setStatus(
+            "Could not reach the styling service. Is the API running?",
+            "error",
+          );
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
