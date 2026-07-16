@@ -1,0 +1,65 @@
+{
+  "_id": {
+    "$oid": "6a4a5504ae508752b390e8f8"
+  },
+  "owner_id": "user_123",
+  "vision_metadata": {
+    "colors": {
+      "dominant": [
+        {
+          "name": "Maroon",
+          "rgb": [85, 40, 38],
+          "hsv": [3, 55, 33],
+          "hex": "#552826",
+          "percentage": 80
+        },
+        {
+          "name": "Beige",
+          "rgb": [194, 189, 184],
+          "hsv": [30, 5, 76],
+          "hex": "#c2bdb8",
+          "percentage": 20
+        }
+      ],
+      "primary_color_family": "Maroon",
+      "secondary_color_family": "Beige"
+    },
+    "detected_attributes": {
+      "category": "Shirt",
+      "subcategory": "Formal Shirt",
+      "fit": "Slim Fit",
+      "sleeve_length": "Full Sleeve",
+      "neck_style": "Spread Collar",
+      "pattern": "Solid",
+      "fabric": "Cotton",
+      "texture": "Smooth",
+      "closure": "Buttons",
+      "neckline": null,
+      "logo_present": false,
+      "graphic_present": false,
+      "hood": false,
+      "pockets": 0
+    },
+    "confidence": {
+      "category": 0.99,
+      "color": 0.95,
+      "fabric": 0.9,
+      "pattern": 0.98,
+      "fit": 0.85
+    },
+    "image": {
+      "original_url": "https://res.cloudinary.com/dppvlsjq1/image/upload/v1783256294/wardrobe/user_123/shirt_3c471c46/tov4w8asq2awykjglsj7.jpg",
+      "thumbnail_url": "https://res.cloudinary.com/dppvlsjq1/image/upload/w_300,c_fit,q_auto,f_auto/v1783256294/wardrobe/user_123/shirt_3c471c46/tov4w8asq2awykjglsj7.jpg",
+      "segmented_url": "https://res.cloudinary.com/dppvlsjq1/image/upload/v1783256296/wardrobe/user_123/shirt_3c471c46/wjbhk1jcufuumcxhbnhb.png"
+    },
+    "segmentation": {
+      "mask_url": "https://res.cloudinary.com/dppvlsjq1/image/upload/v1783256297/wardrobe/user_123/shirt_3c471c46/xbruc3ohkhvw06fpmqgm.png",
+      "bounding_box": [57, 134, 325, 456]
+    },
+    "embedding": [
+      -0.054598066955804825, -0.07192676514387131, 0.01448514312505722,
+      0.021449722349643707, 0.00011541986168595031, 0.03808165714144707,
+      0.03904561325907707
+    ]
+  }
+}

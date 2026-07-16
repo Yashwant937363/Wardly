@@ -23,50 +23,18 @@ from typing import Any
 from bson import ObjectId
 from pydantic import BaseModel
 
-from wardrobe_image_processor import _get_wardrobe_collection, _load_fashion_clip
-
-# ----------------------------------------------------------------------
-# Query embedding (text side of the FashionCLIP joint embedding space)
-# ----------------------------------------------------------------------
-
-_fashion_clip_tokenizer: Any = None
+from app.models.outfit import OutfitCombination
+from app.services.fashion_clip import embed_query
+from app.services.mongo_client import collection
 
 
-def _load_fashion_clip_tokenizer() -> Any:
-    global _fashion_clip_tokenizer
-    if _fashion_clip_tokenizer is None:
-        import open_clip
-
-        _fashion_clip_tokenizer = open_clip.get_tokenizer("hf-hub:Marqo/marqo-fashionCLIP")
-    return _fashion_clip_tokenizer
-
-
-def embed_query(query: str) -> list[float]:
-    """
-    Embed a text query into the SAME space as the stored image embeddings.
-    """
-    import torch
-
-    model, _ = _load_fashion_clip()
-    tokenizer = _load_fashion_clip_tokenizer()
-
-    tokens = tokenizer([query])
-    with torch.no_grad():
-        text_features = model.encode_text(tokens, normalize=True)
-
-    return text_features[0].tolist()
-
-
-# ----------------------------------------------------------------------
-# Vector search shortlist
-# ----------------------------------------------------------------------
 
 def shortlist_items(query_embedding: list[float], owner_id: str, limit: int = 15) -> list[dict]:
     """
     Vector search MongoDB Atlas for the items closest to the query
     embedding, scoped to one user's wardrobe via the filter field.
     """
-    collection = _get_wardrobe_collection()
+    
     pipeline = [
         {
             "$vectorSearch": {
@@ -93,21 +61,7 @@ def shortlist_items(query_embedding: list[float], owner_id: str, limit: int = 15
     return list(collection.aggregate(pipeline))
 
 
-# ----------------------------------------------------------------------
-# Gemini: turn the shortlist into outfit combinations
-# ----------------------------------------------------------------------
 
-class OutfitItemRef(BaseModel):
-    item_id: str
-    category: str
-    reason: str
-    image_url: str | None = None
-
-
-class OutfitCombination(BaseModel):
-    title: str
-    items: list[OutfitItemRef]
-    styling_notes: str
 
 
 class OutfitSuggestions(BaseModel):
@@ -172,7 +126,6 @@ def _fetch_missing_image_urls(item_ids: list[str]) -> dict[str, str]:
     if not item_ids:
         return {}
 
-    collection = _get_wardrobe_collection()
     cursor = collection.find(
         {"_id": {"$in": [ObjectId(i) for i in item_ids]}},
         {"vision_metadata.image.thumbnail_url": 1},
