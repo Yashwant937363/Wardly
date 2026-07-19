@@ -10,19 +10,37 @@ Requires:
 
 
 import asyncio
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+
 from app.services.mongo_client import _mongo_safe, collection
 from app.api.items import router as item_router
 from app.api.suggestions import router as suggestions_router
+from app.services.fashion_clip import _load_fashion_clip_tokenizer, _load_fashion_clip
+from app.services.rembg_service import _load_rembg_model
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Server starting...")
+    model, _ = _load_fashion_clip()
+    if model != None:
+        print("Fashion Clip Model Loaded")
+    tokenizer = _load_fashion_clip_tokenizer()
+    if tokenizer != None:
+        print("Fasion Tokenizer Model Loaded")
+    session = _load_rembg_model()
+    if session != None:
+        print("RemBG Model Loaded")
+    yield
 
+    # Run shutdown functions
+    print("Server shutting down...")
+    
 
-
-
-app = FastAPI(title="Wardly API")
+app = FastAPI(title="Wardly API", lifespan=lifespan)
 
 
 app.add_middleware(
@@ -47,4 +65,4 @@ async def get_all_items():
 app.include_router(item_router, prefix="/api")
 app.include_router(suggestions_router, prefix="/api")
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/", StaticFiles(directory="app/static", html=True), name="static")

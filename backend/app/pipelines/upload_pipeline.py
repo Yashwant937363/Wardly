@@ -2,6 +2,7 @@ import base64
 from datetime import datetime
 from pathlib import Path
 from pydantic import ValidationError
+import time
 
 from app.models.classification import ClassificationResult
 from app.models.classification import ClassificationResult, GarmentCategory, ImageType
@@ -181,7 +182,7 @@ def process_wardrobe_image(
     workdir = Path(f"tmp/cutout/{owner_id}/{upload_id}")
     cutout_path = output_path if output_path is not None else str(workdir / "cutout.png")
     mask_path = str(workdir / "mask.png")
- 
+    
     classification = classify_image_type(image_path)
  
     if classification.image_type == ImageType.UNUSABLE:

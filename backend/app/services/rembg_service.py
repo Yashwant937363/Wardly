@@ -1,8 +1,16 @@
 from PIL import Image
 from pathlib import Path
-
+import numpy as np
+from rembg import remove, new_session
 from app.exceptions import UnusableImageError
 
+_session = None
+
+def _load_rembg_model():
+    global _session
+    if _session == None:
+        _session = new_session("u2net")
+    return _session
 
 def extract_with_rembg(
     image_path: str, output_path: str, mask_output_path: str
@@ -14,11 +22,10 @@ def extract_with_rembg(
     Returns:
         (cutout_path, mask_path, bounding_box)
     """
-    import numpy as np
-    from rembg import remove
  
     input_image = Image.open(image_path).convert("RGBA")
-    result = remove(input_image)  # PIL.Image in -> PIL.Image out
+    session = _load_rembg_model()
+    result = remove(input_image, session=session)  # PIL.Image in -> PIL.Image out
  
     if not isinstance(result, Image.Image):
         raise TypeError(f"Expected rembg to return a PIL.Image, got {type(result)}")
