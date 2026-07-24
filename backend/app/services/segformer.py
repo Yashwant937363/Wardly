@@ -1,3 +1,4 @@
+import time
 from typing import TYPE_CHECKING, Any
 
 from PIL import Image
@@ -51,12 +52,11 @@ def _crop_to_mask(rgba_array, mask):
     y0, y1 = int(ys.min()), int(ys.max())
     x0, x1 = int(xs.min()), int(xs.max())
     cropped_array = rgba_array[y0 : y1 + 1, x0 : x1 + 1]
-    bounding_box = [x0, y0, x1, y1]  # relative to the ORIGINAL uploaded image
-    return Image.fromarray(cropped_array, mode="RGBA"), bounding_box
+    return Image.fromarray(cropped_array, mode="RGBA")
 
 def extract_with_cloth_parser(
     image_path: str, category: str, output_path: str, mask_output_path: str
-) -> tuple[str, str, list[int]]:
+) -> tuple[str, str]:
     """
     Isolate a single garment from an on-model photo using Segformer human
     parsing, and save it as a transparent PNG cutout.
@@ -67,7 +67,7 @@ def extract_with_cloth_parser(
     import numpy as np
     import torch
     import torch.nn as nn
- 
+    t0 = time.time()
     label_names = CATEGORY_TO_SEGFORMER_LABEL.get(category.lower())
     if label_names is None:
         raise UnsupportedCategoryError(
@@ -102,12 +102,12 @@ def extract_with_cloth_parser(
     rgba_array = np.array(rgba)
     rgba_array[:, :, 3] = mask  # alpha channel = garment mask
  
-    cropped, bounding_box = _crop_to_mask(rgba_array, mask)
+    cropped= _crop_to_mask(rgba_array, mask)
  
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     cropped.save(output_path)
  
     Path(mask_output_path).parent.mkdir(parents=True, exist_ok=True)
     Image.fromarray(mask, mode="L").save(mask_output_path)  # plain black/white mask
- 
-    return output_path, mask_output_path, bounding_box
+    print(f"cloth parser: {time.time() - t0:.2f}s")
+    return output_path, mask_output_path

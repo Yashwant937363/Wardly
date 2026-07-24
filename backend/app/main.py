@@ -20,7 +20,7 @@ from app.api.items import router as item_router
 from app.api.suggestions import router as suggestions_router
 from app.services.fashion_clip import _load_fashion_clip_tokenizer, _load_fashion_clip
 from app.services.rembg_service import _load_rembg_model
-
+from app.services.cloudinary_client import _cloudinary_configured
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
     if session != None:
         print("RemBG Model Loaded")
     yield
-
+    _cloudinary_configured()
     # Run shutdown functions
     print("Server shutting down...")
     

@@ -23,8 +23,9 @@ from typing import Any
 from bson import ObjectId
 from pydantic import BaseModel
 
-from app.models.outfit import OutfitCombination
+from app.models.outfit_suggestions import OutfitSuggestions
 from app.services.fashion_clip import embed_query
+from app.services.groq_client import get_recommandations as groq_get_recommandation
 from app.services.mongo_client import collection
 
 
@@ -62,12 +63,6 @@ def shortlist_items(query_embedding: list[float], owner_id: str, limit: int = 15
 
 
 
-
-
-class OutfitSuggestions(BaseModel):
-    combinations: list[OutfitCombination]
-
-
 def build_outfit_suggestions(query: str, shortlisted_items: list[dict]) -> OutfitSuggestions:
     """
     Ask Gemini to build 1-2 outfit combinations from the shortlisted items.
@@ -77,7 +72,6 @@ def build_outfit_suggestions(query: str, shortlisted_items: list[dict]) -> Outfi
     """
     from google import genai
 
-    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     print("before calling gemini api")
     catalog_for_prompt = [
         {
@@ -90,31 +84,21 @@ def build_outfit_suggestions(query: str, shortlisted_items: list[dict]) -> Outfi
         for item in shortlisted_items
     ]
 
-    prompt = (
-        f'The user wants outfit ideas for: "{query}"\n\n'
+    system_prompt = (
         "Below is a JSON shortlist of items from their closet. Build 1-2 "
         "complete outfit combinations using ONLY these items — do not invent "
         "items that aren't in this list. Reference each chosen item by its "
         "exact item_id. Prefer items whose fashion_metadata occasions/style "
         "match the query, and pick colors that coordinate well together.\n\n"
+    )
+    user_prompt = (
+        f'The user wants outfit ideas for: "{query}"\n\n'
         f"Closet shortlist:\n{catalog_for_prompt}"
     )
 
-    interaction = client.interactions.create(
-        model="gemini-3.5-flash",
-        input=[{"type": "text", "text": prompt}],
-        response_format={
-            "type": "text",
-            "mime_type": "application/json",
-            "schema": OutfitSuggestions.model_json_schema(),
-        },
-        generation_config={"thinking_level": "low"},
-    )
-
-    if interaction.output_text is None:
-        raise RuntimeError("Gemini returned no output for outfit suggestions.")
+    data = groq_get_recommandation(system_prompt=system_prompt, user_prompt=user_prompt)
     print("Got Output")
-    return OutfitSuggestions.model_validate_json(interaction.output_text)
+    return data
 
 def _fetch_missing_image_urls(item_ids: list[str]) -> dict[str, str]:
     """

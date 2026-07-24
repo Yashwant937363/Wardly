@@ -1,4 +1,5 @@
 import os
+import time
 
 from bson import ObjectId
 from pymongo import MongoClient
@@ -11,7 +12,9 @@ collection = db["wardrobe_items"]
 
 
 def save_wardrobe_item(document: dict):
+    t0 = time.time()
     collection.insert_one(document)
+    print(f"save document: {time.time() - t0:.2f}s")
 
 def _get_wardrobe_collection():
     """

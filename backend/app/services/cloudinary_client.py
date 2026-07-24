@@ -1,22 +1,22 @@
 import os
+import cloudinary
+import cloudinary.uploader
 
 
 def _cloudinary_configured() -> None:
-    import cloudinary
- 
     cloudinary.config(
         cloud_name=os.environ["CLOUDINARY_CLOUD_NAME"],
         api_key=os.environ["CLOUDINARY_API_KEY"],
         api_secret=os.environ["CLOUDINARY_API_SECRET"],
         secure=True,
     )
- 
+
+def get_cloudinary_folder_path(owner_id: str, upload_id: str) -> str:
+    return f"wardrobe/{owner_id}/{upload_id}"
  
 def upload_to_cloudinary(file_path: str, folder: str) -> str:
     """Upload a local file to Cloudinary and return its secure_url."""
-    import cloudinary.uploader
  
-    _cloudinary_configured()
     result = cloudinary.uploader.upload(file_path, folder=folder)
     return result["secure_url"]
  

@@ -1,3 +1,4 @@
+import time
 from typing import TYPE_CHECKING, Any
 
 from PIL import Image
@@ -37,7 +38,7 @@ def generate_embedding(image_path: str) -> list[float]:
     for similarity search / outfit matching via MongoDB Atlas Vector Search.
     """
     import torch
- 
+    t0 = time.time()
     model, preprocess = _load_fashion_clip()
  
     image = Image.open(image_path).convert("RGB")
@@ -45,7 +46,7 @@ def generate_embedding(image_path: str) -> list[float]:
  
     with torch.no_grad():
         image_features = model.encode_image(image_tensor, normalize=True)
- 
+    print(f"image embeddings: {time.time() - t0:.2f}s")
     return image_features[0].tolist()
 
 _fashion_clip_tokenizer: Any = None
@@ -65,12 +66,12 @@ def embed_query(query: str) -> list[float]:
     Embed a text query into the SAME space as the stored image embeddings.
     """
     import torch
-
+    t0 = time.time()
     model, _ = _load_fashion_clip()
     tokenizer = _load_fashion_clip_tokenizer()
 
     tokens = tokenizer([query])
     with torch.no_grad():
         text_features = model.encode_text(tokens, normalize=True)
-
+    print(f"query embeddings: {time.time() - t0:.2f}s")
     return text_features[0].tolist()

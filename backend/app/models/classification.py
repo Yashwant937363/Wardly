@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List, Optional
 from enums.clothing_item import *
+from app.models.wardrobe_schema import Category
 from pydantic import BaseModel
 
 
@@ -31,4 +32,5 @@ class ImageType(str, Enum):
 class ClassificationResult(BaseModel):
     image_type: ImageType
     category: GarmentCategory
+    wear_category: Category
     reason: str

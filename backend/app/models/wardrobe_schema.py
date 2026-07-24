@@ -31,7 +31,7 @@ Design notes (mirrors the TS file's reasoning):
 """
 
 from enum import Enum
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal, Type, Union
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -201,6 +201,33 @@ class WaistwearMetadata(BaseModel):
     adjustable: bool
 
 
+
+def get_metadata_class(wear_category: Category) -> Type[BaseModel]:
+    """Return the Pydantic metadata model corresponding to a given wear_category."""
+    mapping: dict[Category, Type[BaseModel]] = {
+        Category.TOPWEAR: TopwearMetadata,
+        Category.BOTTOMWEAR: BottomwearMetadata,
+        Category.DRESSWEAR: DresswearMetadata,
+        Category.DRAPEWEAR: DrapewearMetadata,
+        Category.OUTERWEAR: OuterwearMetadata,
+        Category.INNERWEAR: InnerwearMetadata,
+        Category.FOOTWEAR: FootwearMetadata,
+        Category.HOSIERY: HosieryMetadata,
+        Category.HEADWEAR: HeadwearMetadata,
+        Category.EYEWEAR: EyewearMetadata,
+        Category.EARWEAR: EarwearMetadata,
+        Category.NECKWEAR: NeckwearMetadata,
+        Category.WRISTWEAR: WristwearMetadata,
+        Category.ANKLEWEAR: AnklewearMetadata,
+        Category.BAGS: BagsMetadata,
+        Category.WAISTWEAR: WaistwearMetadata,
+    }
+
+    metadata_class = mapping.get(wear_category)
+    if metadata_class is None:
+        raise ValueError(f"No metadata class registered for wear_category: {wear_category}")
+
+    return metadata_class
 # ---------- Discriminated Union of All Category Items ----------
 # Each subclass pairs a category with its matching metadata shape.
 # Field(discriminator="category") is Pydantic's equivalent of TS
@@ -286,6 +313,35 @@ class WaistwearItem(WardrobeItemBase):
     category: Literal[Category.WAISTWEAR] = Category.WAISTWEAR
     metadata: WaistwearMetadata
 
+
+def get_item_class(wear_category: Category) -> Type[WardrobeItemBase]:
+    """Return the Pydantic wardrobe item model corresponding to a given wear_category."""
+    mapping: dict[Category, Type[WardrobeItemBase]] = {
+        Category.TOPWEAR: TopwearItem,
+        Category.BOTTOMWEAR: BottomwearItem,
+        Category.DRESSWEAR: DresswearItem,
+        Category.DRAPEWEAR: DrapewearItem,
+        Category.OUTERWEAR: OuterwearItem,
+        Category.INNERWEAR: InnerwearItem,
+        Category.FOOTWEAR: FootwearItem,
+        Category.HOSIERY: HosieryItem,
+        Category.HEADWEAR: HeadwearItem,
+        Category.EYEWEAR: EyewearItem,
+        Category.EARWEAR: EarwearItem,
+        Category.NECKWEAR: NeckwearItem,
+        Category.WRISTWEAR: WristwearItem,
+        Category.ANKLEWEAR: AnklewearItem,
+        Category.BAGS: BagsItem,
+        Category.WAISTWEAR: WaistwearItem,
+    }
+
+    item_class = mapping.get(wear_category)
+    if item_class is None:
+        raise ValueError(
+            f"No item class registered for wear_category: {wear_category}"
+        )
+
+    return item_class
 
 WardrobeItem = Annotated[
     Union[

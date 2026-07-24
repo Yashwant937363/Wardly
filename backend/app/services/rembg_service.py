@@ -1,3 +1,5 @@
+import time
+
 from PIL import Image
 from pathlib import Path
 import numpy as np
@@ -14,7 +16,7 @@ def _load_rembg_model():
 
 def extract_with_rembg(
     image_path: str, output_path: str, mask_output_path: str
-) -> tuple[str, str, list[int]]:
+) -> tuple[str, str]:
     """
     Generic foreground cutout for garment-only product/mannequin photos
     where the whole foreground IS the garment.
@@ -22,7 +24,7 @@ def extract_with_rembg(
     Returns:
         (cutout_path, mask_path, bounding_box)
     """
- 
+    t0 = time.time()
     input_image = Image.open(image_path).convert("RGBA")
     session = _load_rembg_model()
     result = remove(input_image, session=session)  # PIL.Image in -> PIL.Image out
@@ -35,12 +37,11 @@ def extract_with_rembg(
         raise UnusableImageError("rembg found no foreground subject in this image.")
  
     ys, xs = np.where(alpha > 0)
-    bounding_box = [int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())]
  
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     result.save(output_path)
  
     Path(mask_output_path).parent.mkdir(parents=True, exist_ok=True)
     Image.fromarray(alpha, mode="L").save(mask_output_path)
- 
-    return output_path, mask_output_path, bounding_box
+    print(f"rembg time: {time.time() - t0:.2f}s")
+    return output_path, mask_output_path

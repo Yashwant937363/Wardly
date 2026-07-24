@@ -1,3 +1,4 @@
+import time
 import uuid
 import asyncio
 from pathlib import Path
@@ -6,6 +7,8 @@ from fastapi import APIRouter,FastAPI, File, Form, HTTPException, UploadFile
 
 from app.exceptions import UnsupportedCategoryError, UnusableImageError
 
+from app.models.wardrobe_schema import WardrobeItem, get_item_class
+from app.services.cloudinary_client import get_cloudinary_folder_path, upload_to_cloudinary
 from app.services.fashion_clip import generate_embedding
 from app.services.mongo_client import collection,_mongo_safe, save_wardrobe_item
 from app.pipelines.upload_pipeline import analyze_clothing_image, build_wardrobe_document, process_wardrobe_image
@@ -30,29 +33,42 @@ async def process_and_store_item(
     Category is no longer passed in — Gemini detects it inside
     process_wardrobe_image and it comes back on routing_result["category"].
     """
-    routing_result = await asyncio.to_thread(
-        process_wardrobe_image,
+    t0 = time.time()
+    routing_result = await process_wardrobe_image(
         image_path=image_path,
         owner_id=owner_id,
         upload_id=upload_id,
         output_path=output_path,
     )
+    category = routing_result.category
+    folder: str = get_cloudinary_folder_path(owner_id=owner_id, upload_id=upload_id)
+    
+    cutout_path = routing_result.cutout_path
+    
+    t1 = time.time()
 
-    analysis, embedding = await asyncio.gather(
-        asyncio.to_thread(analyze_clothing_image, output_path),
+    schema = get_item_class(category)
+
+    analysis, embedding, segmented_url  = await asyncio.gather(
+        analyze_clothing_image( output_path,category=category),
         asyncio.to_thread(generate_embedding, output_path),
+        asyncio.to_thread(upload_to_cloudinary, cutout_path, folder=folder)
     )
+    routing_result.image.segmented_url = segmented_url
+
+    print(f"analyze, embeddings, cutout and mask upload: {time.time() - t1:.2f}s")
 
     document = build_wardrobe_document(
         owner_id=owner_id,
-        image_result=routing_result,
+        image_result=routing_result.image,
         analysis=analysis,
         embedding=embedding,
     )
     await asyncio.to_thread(save_wardrobe_item, document)
+    print(f"image upload: {time.time() - t0:.2f}s")
     return document
 
-@router.post("/api/items")
+@router.post("/items")
 async def upload_item(
     file: UploadFile = File(...),
     owner_id: str = Form("user_123"),  # replace with real auth once you have it
@@ -65,6 +81,7 @@ async def upload_item(
         f.write(await file.read())
 
     try:
+        print("Got Request")
         document = await process_and_store_item(
             image_path=str(upload_path),
             owner_id=owner_id,
